@@ -41,7 +41,7 @@ const About = () => {
       {/* Hero секция */}
       <section className="py-16 bg-gradient-to-r from-primary/10 to-secondary/10">
         <div className="container text-center">
-          <h1 className="text-4xl font-bold mb-4">О платформе Gesture Path Learn</h1>
+          <h1 className="text-4xl font-bold mb-4">О платформе Visual Mind</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Инновационная образовательная платформа для изучения жестового языка 
             с использованием 3D-аватаров и искусственного интеллекта
@@ -61,7 +61,7 @@ const About = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-lg">
-                Gesture Path Learn — это современная образовательная платформа, созданная для 
+                Visual Mind — это современная образовательная платформа, созданная для 
                 эффективного изучения жестового языка. Мы используем передовые технологии 
                 3D-визуализации и искусственного интеллекта, чтобы сделать процесс обучения 
                 максимально интерактивным и доступным.

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Mail, Phone, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const CTASection = () => {
   return (
@@ -28,12 +29,16 @@ const CTASection = () => {
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-4 shadow-strong">
-                Зарегистрироваться
-                <ArrowRight className="ml-2 w-5 h-5" />
+              <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-4 shadow-strong">
+                <Link to="/register">
+                  Зарегистрироваться
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
               </Button>
-              <Button size="lg" variant="outline" className="text-white border-white/30 hover:bg-white/10 text-lg px-8 py-4">
-                Связаться с нами
+              <Button asChild size="lg" variant="outline" className="text-white border-white/30 hover:bg-white/10 text-lg px-8 py-4">
+                <Link to="/contact">
+                  Связаться с нами
+                </Link>
               </Button>
             </div>
             

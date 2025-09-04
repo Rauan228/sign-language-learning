@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Play, Users, BookOpen } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-education.jpg";
 import aiAvatar from "@/assets/ai-avatar.jpg";
 
@@ -44,12 +45,16 @@ const HeroSection = () => {
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button size="lg" className="btn-hero text-lg px-8 py-4">
-                Начать обучение
-                <Play className="ml-2 w-5 h-5" />
+              <Button asChild size="lg" className="btn-hero text-lg px-8 py-4">
+                <Link to="/courses">
+                  Начать обучение
+                  <Play className="ml-2 w-5 h-5" />
+                </Link>
               </Button>
-              <Button size="lg" variant="outline" className="text-white border-white/30 hover:bg-white/10 text-lg px-8 py-4">
-                Демо AI-репетитора
+              <Button asChild size="lg" variant="outline" className="text-white border-white/30 hover:bg-white/10 text-lg px-8 py-4">
+                <Link to="/ai-assistant">
+                  Демо AI-репетитора
+                </Link>
               </Button>
             </div>
           </div>

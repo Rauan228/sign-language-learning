@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, Clock, Users, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import mathImage from "@/assets/course-math.jpg";
 import biologyImage from "@/assets/course-biology.jpg";
 import anatomyImage from "@/assets/course-anatomy.jpg";
@@ -120,9 +121,11 @@ const CoursePreviewCards = () => {
                   <div className="text-2xl font-bold text-primary">
                     {course.price}
                   </div>
-                  <Button className="btn-hero group">
-                    Начать курс
-                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  <Button asChild className="btn-hero group">
+                    <Link to="/courses">
+                      Начать курс
+                      <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
                   </Button>
                 </div>
               </div>
@@ -132,9 +135,11 @@ const CoursePreviewCards = () => {
         
         {/* View All Courses Button */}
         <div className="text-center animate-fade-in">
-          <Button size="lg" variant="outline" className="text-lg px-8 py-4">
-            Посмотреть все курсы
-            <ArrowRight className="ml-2 w-5 h-5" />
+          <Button asChild size="lg" variant="outline" className="text-lg px-8 py-4">
+            <Link to="/courses">
+              Посмотреть все курсы
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Link>
           </Button>
         </div>
       </div>

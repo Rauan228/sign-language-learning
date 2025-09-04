@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { UserPlus, BookOpen, Brain, Trophy } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const steps = [
   {
@@ -30,7 +31,7 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section className="py-20 bg-background">
+    <section className="py-20 bg-background overflow-x-hidden">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 animate-fade-in-up">
           <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
@@ -68,10 +69,7 @@ const HowItWorks = () => {
                   {step.description}
                 </p>
                 
-                {/* Connection Line (hidden on mobile) */}
-                {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-primary/50 to-transparent transform translate-x-4 -translate-y-1/2"></div>
-                )}
+
               </div>
             ))}
           </div>
@@ -86,8 +84,10 @@ const HowItWorks = () => {
                 Присоединяйтесь к тысячам студентов, которые уже изучают новые предметы 
                 с помощью нашего AI-репетитора
               </p>
-              <Button size="lg" className="btn-hero text-lg px-8 py-4">
-                Зарегистрироваться бесплатно
+              <Button asChild size="lg" className="btn-hero text-lg px-8 py-4">
+                <Link to="/register">
+                  Зарегистрироваться бесплатно
+                </Link>
               </Button>
             </div>
           </div>

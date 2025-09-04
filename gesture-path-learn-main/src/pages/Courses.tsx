@@ -1,294 +1,430 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Search, Star, Heart, Clock, Users } from "lucide-react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
+import SearchBar from "@/components/SearchBar";
+import FiltersPanel from "@/components/FiltersPanel";
+import CourseCard from "@/components/CourseCard";
+import Pagination from "@/components/Pagination";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Filter, SlidersHorizontal, Grid3X3, List } from "lucide-react";
 
 // Моковые данные курсов
-const mockCourses = [
-  {
-    id: 1,
-    title: "Основы русского жестового языка",
-    description: "Изучите базовые жесты и грамматику РЖЯ. Курс для начинающих с интерактивными уроками.",
-    image: "/api/placeholder/300/200",
-    rating: 4.8,
-    students: 1250,
-    duration: "8 недель",
-    level: "Начинающий",
-    language: "РЖЯ",
-    category: "Основы",
-    price: "Бесплатно",
-    isFavorite: false
-  },
-  {
-    id: 2,
-    title: "Математика на жестовом языке",
-    description: "Изучайте математические концепции через жестовый язык. Подходит для школьников и студентов.",
-    image: "/api/placeholder/300/200",
-    rating: 4.6,
-    students: 890,
-    duration: "12 недель",
-    level: "Средний",
-    language: "РЖЯ",
-    category: "Предметы",
-    price: "1990 ₽",
-    isFavorite: true
-  },
-  {
-    id: 3,
-    title: "Деловое общение на ASL",
-    description: "Профессиональное общение на американском жестовом языке для бизнес-среды.",
-    image: "/api/placeholder/300/200",
-    rating: 4.9,
-    students: 567,
-    duration: "6 недель",
-    level: "Продвинутый",
-    language: "ASL",
-    category: "Бизнес",
-    price: "2990 ₽",
-    isFavorite: false
-  },
-  {
-    id: 4,
-    title: "История на жестовом языке",
-    description: "Изучение исторических событий и понятий через жестовый язык.",
-    image: "/api/placeholder/300/200",
-    rating: 4.7,
-    students: 432,
-    duration: "10 недель",
-    level: "Средний",
-    language: "РЖЯ",
-    category: "Предметы",
-    price: "1590 ₽",
-    isFavorite: false
-  }
-];
+  const mockCourses = [
+    {
+      id: "1",
+      title: "Основы русского жестового языка",
+      description: "Изучите базовые жесты и грамматику РЖЯ с нуля. Курс включает интерактивные упражнения с 3D-аватаром.",
+      thumbnail: "/api/placeholder/400/225",
+      price: 2500,
+      originalPrice: 3500,
+      rating: 4.8,
+      reviewsCount: 156,
+      studentsCount: 1250,
+      duration: "8 недель",
+      level: "Начинающий",
+      language: "Русский жестовый язык (РЖЯ)",
+      category: "Основы жестового языка",
+      instructor: "Анна Петрова",
+      isFree: false,
+      isNew: true,
+      isBestseller: true
+    },
+    {
+      id: "2",
+      title: "Дактилология для начинающих",
+      description: "Освойте пальцевую азбуку и научитесь быстро дактилировать. Практические упражнения и тесты.",
+      thumbnail: "/api/placeholder/400/225",
+      price: 1500,
+      rating: 4.6,
+      reviewsCount: 89,
+      studentsCount: 890,
+      duration: "4 недели",
+      level: "Начинающий",
+      language: "Русский жестовый язык (РЖЯ)",
+      category: "Дактилология",
+      instructor: "Михаил Сидоров",
+      isFree: false
+    },
+    {
+      id: "3",
+      title: "American Sign Language (ASL) - Intermediate",
+      description: "Продвинутый курс американского жестового языка с изучением сложной грамматики.",
+      thumbnail: "/api/placeholder/400/225",
+      price: 3500,
+      rating: 4.9,
+      reviewsCount: 234,
+      studentsCount: 650,
+      duration: "12 недель",
+      level: "Средний",
+      language: "American Sign Language (ASL)",
+      category: "Грамматика",
+      instructor: "Sarah Johnson",
+      isFree: false,
+      isBestseller: true
+    },
+    {
+      id: "4",
+      title: "Культура глухих и слабослышащих",
+      description: "Изучите историю и культуру сообщества глухих. Бесплатный вводный курс.",
+      thumbnail: "/api/placeholder/400/225",
+      price: 0,
+      rating: 4.7,
+      reviewsCount: 312,
+      studentsCount: 2100,
+      duration: "6 недель",
+      level: "Начинающий",
+      language: "Русский жестовый язык (РЖЯ)",
+      category: "Культура глухих",
+      instructor: "Елена Козлова",
+      isFree: true,
+      isNew: true
+    },
+    {
+      id: "5",
+      title: "Профессиональная лексика в медицине",
+      description: "Специализированные жесты для медицинских работников и студентов медвузов.",
+      thumbnail: "/api/placeholder/400/225",
+      price: 4000,
+      rating: 4.5,
+      reviewsCount: 67,
+      studentsCount: 320,
+      duration: "10 недель",
+      level: "Продвинутый",
+      language: "Русский жестовый язык (РЖЯ)",
+      category: "Профессиональная лексика",
+      instructor: "Дмитрий Волков",
+      isFree: false
+    },
+    {
+      id: "6",
+      title: "British Sign Language (BSL) Basics",
+      description: "Основы британского жестового языка для начинающих с интерактивными упражнениями.",
+      thumbnail: "/api/placeholder/400/225",
+      price: 2800,
+      rating: 4.4,
+      reviewsCount: 123,
+      studentsCount: 450,
+      duration: "8 недель",
+      level: "Начинающий",
+      language: "British Sign Language (BSL)",
+      category: "Основы жестового языка",
+      instructor: "James Wilson",
+      isFree: false
+    },
+    {
+      id: "7",
+      title: "Детский жестовый язык",
+      description: "Специальный курс для обучения детей жестовому языку в игровой форме.",
+      thumbnail: "/api/placeholder/400/225",
+      price: 2200,
+      rating: 4.8,
+      reviewsCount: 98,
+      studentsCount: 567,
+      duration: "6 недель",
+      level: "Начинающий",
+      language: "Русский жестовый язык (РЖЯ)",
+      category: "Детский жестовый язык",
+      instructor: "Ольга Иванова",
+      isFree: false,
+      isNew: true
+    },
+    {
+      id: "8",
+      title: "Лексика повседневного общения",
+      description: "Изучите жесты для повседневного общения: семья, работа, покупки, транспорт.",
+      thumbnail: "/api/placeholder/400/225",
+      price: 1800,
+      rating: 4.6,
+      reviewsCount: 145,
+      studentsCount: 890,
+      duration: "5 недель",
+      level: "Базовый",
+      language: "Русский жестовый язык (РЖЯ)",
+      category: "Лексика",
+      instructor: "Татьяна Смирнова",
+      isFree: false
+    }
+  ];
+
+interface FilterState {
+  subjects: string[];
+  levels: string[];
+  languages: string[];
+  priceRange: [number, number];
+  rating: number;
+  duration: string;
+  isFree: boolean;
+}
 
 const Courses = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLevel, setSelectedLevel] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({
+    subjects: [],
+    levels: [],
+    languages: [],
+    priceRange: [0, 10000],
+    rating: 0,
+    duration: "",
+    isFree: false
+  });
+  const [sortBy, setSortBy] = useState("relevance");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showFilters, setShowFilters] = useState(false);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
   const [courses, setCourses] = useState(mockCourses);
 
-  const toggleFavorite = (courseId: number) => {
-    setCourses(prev => 
-      prev.map(course => 
-        course.id === courseId 
-          ? { ...course, isFavorite: !course.isFavorite }
-          : course
-      )
+  // Логика фильтрации и поиска
+  const filteredCourses = mockCourses.filter(course => {
+    // Поиск по названию и описанию
+    const matchesSearch = !searchQuery || 
+      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.instructor.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Фильтр по предметам
+    const matchesSubjects = filters.subjects.length === 0 || 
+      filters.subjects.includes(course.category);
+    
+    // Фильтр по уровням
+    const matchesLevels = filters.levels.length === 0 || 
+      filters.levels.includes(course.level);
+    
+    // Фильтр по языкам
+    const matchesLanguages = filters.languages.length === 0 || 
+      filters.languages.includes(course.language);
+    
+    // Фильтр по цене
+    const matchesPrice = (!filters.isFree || course.isFree) &&
+      course.price >= filters.priceRange[0] && course.price <= filters.priceRange[1];
+    
+    // Фильтр по рейтингу
+    const matchesRating = filters.rating === 0 || course.rating >= filters.rating;
+    
+    return matchesSearch && matchesSubjects && matchesLevels && 
+           matchesLanguages && matchesPrice && matchesRating;
+  });
+
+  // Сортировка
+  const sortedCourses = [...filteredCourses].sort((a, b) => {
+    switch (sortBy) {
+      case "price-low":
+        return a.price - b.price;
+      case "price-high":
+        return b.price - a.price;
+      case "rating":
+        return b.rating - a.rating;
+      case "students":
+        return b.studentsCount - a.studentsCount;
+      case "newest":
+        return a.isNew ? -1 : b.isNew ? 1 : 0;
+      default:
+        return 0;
+    }
+  });
+
+  // Пагинация
+  const totalPages = Math.ceil(sortedCourses.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedCourses = sortedCourses.slice(startIndex, startIndex + itemsPerPage);
+
+  // Управление избранным
+  const toggleFavorite = (courseId: string) => {
+    setFavorites(prev => 
+      prev.includes(courseId)
+        ? prev.filter(id => id !== courseId)
+        : [...prev, courseId]
     );
   };
 
-  const filteredCourses = courses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         course.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesLevel = !selectedLevel || course.level === selectedLevel;
-    const matchesLanguage = !selectedLanguage || course.language === selectedLanguage;
-    const matchesCategory = !selectedCategory || course.category === selectedCategory;
-    const matchesFavorites = !showFavoritesOnly || course.isFavorite;
-    
-    return matchesSearch && matchesLevel && matchesLanguage && matchesCategory && matchesFavorites;
-  });
+  // Сброс пагинации при изменении фильтров
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filters, sortBy]);
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Каталог курсов</h1>
-          <p className="text-muted-foreground">
-            Изучайте жестовый язык с помощью интерактивных курсов и 3D-аватаров
+      
+      {/* Hero секция */}
+      <section className="py-16 bg-gradient-to-r from-primary/10 to-secondary/10">
+        <div className="container text-center">
+          <h1 className="text-4xl font-bold mb-4">Каталог курсов Visual Mind</h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Выберите курс жестового языка, который подходит именно вам. Интерактивное обучение с AI-ассистентом.
           </p>
         </div>
+      </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="container py-8">
+        {/* Поиск */}
+        <div className="mb-8">
+          <SearchBar
+            onSearch={setSearchQuery}
+            placeholder="Поиск курсов по названию, описанию или преподавателю..."
+          />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Фильтры */}
           <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Фильтры</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Поиск */}
-                <div className="space-y-2">
-                  <Label>Поиск курсов</Label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Название или описание..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Уровень */}
-                <div className="space-y-2">
-                  <Label>Уровень сложности</Label>
-                  <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Все уровни" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Все уровни</SelectItem>
-                      <SelectItem value="Начинающий">Начинающий</SelectItem>
-                      <SelectItem value="Средний">Средний</SelectItem>
-                      <SelectItem value="Продвинутый">Продвинутый</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Язык жеста */}
-                <div className="space-y-2">
-                  <Label>Язык жеста</Label>
-                  <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Все языки" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Все языки</SelectItem>
-                      <SelectItem value="РЖЯ">Русский жестовый язык</SelectItem>
-                      <SelectItem value="ASL">Американский жестовый язык</SelectItem>
-                      <SelectItem value="BSL">Британский жестовый язык</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Категория */}
-                <div className="space-y-2">
-                  <Label>Категория</Label>
-                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Все категории" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Все категории</SelectItem>
-                      <SelectItem value="Основы">Основы</SelectItem>
-                      <SelectItem value="Предметы">Предметы</SelectItem>
-                      <SelectItem value="Бизнес">Бизнес</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Separator />
-
-                {/* Избранное */}
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id="favorites" 
-                    checked={showFavoritesOnly}
-                    onCheckedChange={(checked) => setShowFavoritesOnly(checked as boolean)}
-                  />
-                  <Label htmlFor="favorites">Только избранные</Label>
-                </div>
-              </CardContent>
-            </Card>
+            <div className={`lg:block ${showFilters ? 'block' : 'hidden'}`}>
+              <FiltersPanel
+                onFiltersChange={setFilters}
+                className="sticky top-4"
+              />
+            </div>
           </div>
 
-          {/* Список курсов */}
+          {/* Основной контент */}
           <div className="lg:col-span-3">
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
-                Найдено курсов: {filteredCourses.length}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredCourses.map((course) => (
-                <Card key={course.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <div className="relative">
-                    <img 
-                      src={course.image} 
-                      alt={course.title}
-                      className="w-full h-48 object-cover"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 bg-white/80 hover:bg-white"
-                      onClick={() => toggleFavorite(course.id)}
-                    >
-                      <Heart 
-                        className={`h-4 w-4 ${
-                          course.isFavorite 
-                            ? 'fill-red-500 text-red-500' 
-                            : 'text-gray-600'
-                        }`} 
-                      />
-                    </Button>
-                  </div>
-                  
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <CardTitle className="text-lg line-clamp-2">{course.title}</CardTitle>
-                    </div>
-                    <CardDescription className="line-clamp-3">
-                      {course.description}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="pb-3">
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      <Badge variant="secondary">{course.level}</Badge>
-                      <Badge variant="outline">{course.language}</Badge>
-                      <Badge variant="outline">{course.category}</Badge>
-                    </div>
-                    
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span>{course.rating}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        <span>{course.students}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        <span>{course.duration}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                  
-                  <CardFooter className="pt-0">
-                    <div className="flex items-center justify-between w-full">
-                      <span className="text-lg font-semibold">{course.price}</span>
-                      <Button>Начать изучение</Button>
-                    </div>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-
-            {filteredCourses.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">
-                  По вашему запросу курсы не найдены
-                </p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setSearchQuery("");
-                    setSelectedLevel("");
-                    setSelectedLanguage("");
-                    setSelectedCategory("");
-                    setShowFavoritesOnly(false);
-                  }}
+            {/* Панель управления */}
+            <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="lg:hidden"
                 >
-                  Сбросить фильтры
+                  <SlidersHorizontal className="h-4 w-4 mr-2" />
+                  Фильтры
                 </Button>
+                
+                <p className="text-muted-foreground">
+                  Найдено <span className="font-semibold text-foreground">{sortedCourses.length}</span> курсов
+                </p>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                {/* Вид отображения */}
+                <div className="flex items-center border border-primary/20 rounded-lg p-1">
+                  <Button
+                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('grid')}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Grid3X3 className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={viewMode === 'list' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setViewMode('list')}
+                    className="h-8 w-8 p-0"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                {/* Сортировка */}
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-48 border-primary/20 focus:border-primary focus:ring-primary/20">
+                    <SelectValue placeholder="Сортировать по" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="relevance">По релевантности</SelectItem>
+                    <SelectItem value="rating">По рейтингу</SelectItem>
+                    <SelectItem value="students">По популярности</SelectItem>
+                    <SelectItem value="price-low">Сначала дешевые</SelectItem>
+                    <SelectItem value="price-high">Сначала дорогие</SelectItem>
+                    <SelectItem value="newest">Сначала новые</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Активные фильтры */}
+            {(filters.subjects.length > 0 || filters.levels.length > 0 || filters.languages.length > 0 || filters.isFree) && (
+              <div className="mb-6 flex flex-wrap items-center gap-2">
+                <span className="text-sm text-muted-foreground">Активные фильтры:</span>
+                {filters.subjects.map(subject => (
+                  <Badge key={subject} variant="secondary" className="bg-primary/10 text-primary">
+                    {subject}
+                  </Badge>
+                ))}
+                {filters.levels.map(level => (
+                  <Badge key={level} variant="secondary" className="bg-secondary/10 text-secondary">
+                    {level}
+                  </Badge>
+                ))}
+                {filters.languages.map(language => (
+                  <Badge key={language} variant="secondary" className="bg-accent/10 text-accent">
+                    {language}
+                  </Badge>
+                ))}
+                {filters.isFree && (
+                  <Badge variant="secondary" className="bg-success/10 text-success">
+                    Бесплатные
+                  </Badge>
+                )}
+              </div>
+            )}
+
+            {/* Список курсов */}
+            {paginatedCourses.length > 0 ? (
+              <>
+                <div className={`grid gap-6 ${
+                  viewMode === 'grid' 
+                    ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' 
+                    : 'grid-cols-1'
+                }`}>
+                  {paginatedCourses.map((course) => (
+                    <CourseCard
+                      key={course.id}
+                      course={course}
+                      onToggleFavorite={toggleFavorite}
+                      isFavorite={favorites.includes(course.id)}
+                      className={viewMode === 'list' ? 'flex-row' : ''}
+                    />
+                  ))}
+                </div>
+                
+                {/* Пагинация */}
+                {totalPages > 1 && (
+                  <div className="mt-12">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      totalItems={sortedCourses.length}
+                      itemsPerPage={itemsPerPage}
+                      onPageChange={setCurrentPage}
+                      onItemsPerPageChange={setItemsPerPage}
+                    />
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-12">
+                <div className="max-w-md mx-auto">
+                  <div className="mb-4">
+                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Filter className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">Курсы не найдены</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Попробуйте изменить параметры поиска или фильтры
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setFilters({
+                        subjects: [],
+                        levels: [],
+                        languages: [],
+                        priceRange: [0, 10000],
+                        rating: 0,
+                        duration: "",
+                        isFree: false
+                      });
+                    }}
+                  >
+                    Сбросить фильтры
+                  </Button>
+                </div>
               </div>
             )}
           </div>
