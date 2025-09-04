@@ -1,6 +1,7 @@
 # Исключаемые файлы и папки
 gesture-path-learn-main/public/
 train_all_videos/
+train/
 test/
 train.rar
 slovo.zip
