@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Educational Platform Design System - Focused on accessibility and visual communication */
+
+@layer base {
+  :root {
+    /* Base colors - High contrast for accessibility */
+    --background: 0 0% 100%;
+    --foreground: 222 84% 4.9%;
+
+    /* Card and surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 222 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 84% 4.9%;
+
+    /* Primary - Educational Blue */
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 217 91% 75%;
+    --primary-dark: 217 91% 45%;
+
+    /* Secondary - Accessible Green */
+    --secondary: 142 76% 36%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-light: 142 76% 51%;
+
+    /* Accent - Warm Orange for highlights */
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 100%;
+    --accent-light: 25 95% 68%;
+
+    /* Neutral tones */
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215 16% 47%;
+    --muted-dark: 215 25% 27%;
+
+    /* Status colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    --warning: 43 96% 56%;
+    --warning-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* UI elements */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-light)));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 2px 4px hsl(var(--primary) / 0.1);
+    --shadow-md: 0 4px 6px -1px hsl(var(--primary) / 0.1), 0 2px 4px -1px hsl(var(--primary) / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(var(--primary) / 0.1), 0 4px 6px -2px hsl(var(--primary) / 0.05);
+    --shadow-glow: 0 0 20px hsl(var(--primary) / 0.3);
+
+    /* Animations */
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Dark mode colors */
+    --background: 222 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217 91% 70%;
+    --primary-foreground: 222 84% 4.9%;
+    --primary-light: 217 91% 80%;
+    --primary-dark: 217 91% 55%;
+
+    --secondary: 142 76% 46%;
+    --secondary-foreground: 222 84% 4.9%;
+    --secondary-light: 142 76% 61%;
+
+    --accent: 25 95% 63%;
+    --accent-foreground: 222 84% 4.9%;
+    --accent-light: 25 95% 78%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --muted-dark: 215 25% 12%;
+
+    --success: 142 76% 46%;
+    --success-foreground: 222 84% 4.9%;
+    --warning: 43 96% 66%;
+    --warning-foreground: 222 84% 4.9%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 217 91% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+  }
+}
+
+@layer components {
+  /* Hero button variants */
+  .btn-hero {
+    @apply bg-gradient-primary text-primary-foreground shadow-glow hover:shadow-strong transition-all duration-300 hover:scale-105;
+  }
+
+  .btn-secondary-hero {
+    @apply bg-gradient-secondary text-secondary-foreground shadow-medium hover:shadow-strong transition-all duration-300 hover:scale-105;
+  }
+
+  /* Card hover effects */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-strong hover:-translate-y-2;
+  }
+
+  /* Text gradients */
+  .text-gradient-primary {
+    @apply bg-gradient-primary bg-clip-text text-transparent;
+  }
+
+  .text-gradient-secondary {
+    @apply bg-gradient-secondary bg-clip-text text-transparent;
+  }
+
+  /* Avatar pulse animation */
+  .avatar-pulse {
+    @apply animate-pulse-glow;
+  }
+}
