@@ -1,0 +1,200 @@
+-- -- Удаляем базу данных если она существует (для чистого старта)
+-- DROP DATABASE IF EXISTS visual_mind_db;
+
+-- -- Создание базы данных
+-- CREATE DATABASE visual_mind_db 
+--   CHARACTER SET utf8mb4 
+--   COLLATE utf8mb4_unicode_ci;
+-- USE visual_mind_db;
+
+-- -- Отключаем проверку внешних ключей временно
+-- SET FOREIGN_KEY_CHECKS = 0;
+
+-- -- Таблица пользователей
+-- CREATE TABLE users (
+--     id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+--     name VARCHAR(100) NOT NULL COMMENT 'Имя пользователя',
+--     email VARCHAR(150) NOT NULL UNIQUE COMMENT 'Email',
+--     phone VARCHAR(20) NULL COMMENT 'Телефон',
+--     password_hash VARCHAR(255) NOT NULL COMMENT 'Хэш пароля',
+--     sign_language ENUM('ru', 'kz', 'asl', 'bsl') NOT NULL DEFAULT 'ru' COMMENT 'Предпочитаемый язык жестов',
+--     role ENUM('student', 'teacher', 'admin') NOT NULL DEFAULT 'student' COMMENT 'Роль пользователя',
+--     is_active BOOLEAN NOT NULL DEFAULT TRUE COMMENT 'Активен ли пользователь',
+--     is_verified BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Подтвержден ли email',
+--     avatar_url VARCHAR(255) NULL COMMENT 'URL аватара',
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата регистрации',
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Дата последнего обновления',
+--     KEY idx_email (email),
+--     KEY idx_role (role),
+--     KEY idx_sign_language (sign_language),
+--     KEY idx_created_at (created_at)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Таблица пользователей';
+
+-- -- Таблица курсов
+-- CREATE TABLE courses (
+--     id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+--     title VARCHAR(200) NOT NULL COMMENT 'Название курса',
+--     description TEXT NOT NULL COMMENT 'Описание курса',
+--     short_description VARCHAR(500) NULL COMMENT 'Краткое описание',
+--     subject VARCHAR(100) NOT NULL COMMENT 'Предмет',
+--     category VARCHAR(100) NOT NULL COMMENT 'Категория',
+--     level ENUM('beginner', 'basic', 'intermediate', 'advanced', 'expert') NOT NULL COMMENT 'Уровень сложности',
+--     sign_language ENUM('ru', 'kz', 'asl', 'bsl') NOT NULL COMMENT 'Язык жестов',
+--     price DECIMAL(10,2) NOT NULL DEFAULT 0.00 COMMENT 'Цена курса',
+--     original_price DECIMAL(10,2) NULL COMMENT 'Первоначальная цена',
+--     is_free BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Бесплатный ли курс',
+--     rating FLOAT NOT NULL DEFAULT 0.0 COMMENT 'Средний рейтинг',
+--     reviews_count INT(11) NOT NULL DEFAULT 0 COMMENT 'Количество отзывов',
+--     students_count INT(11) NOT NULL DEFAULT 0 COMMENT 'Количество студентов',
+--     duration_hours INT(11) NULL COMMENT 'Продолжительность в часах',
+--     thumbnail_url VARCHAR(255) NULL COMMENT 'URL миниатюры',
+--     trailer_url VARCHAR(255) NULL COMMENT 'URL трейлера',
+--     status ENUM('draft', 'published', 'archived') NOT NULL DEFAULT 'draft' COMMENT 'Статус курса',
+--     is_featured BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Рекомендуемый курс',
+--     is_new BOOLEAN NOT NULL DEFAULT TRUE COMMENT 'Новый курс',
+--     is_bestseller BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Бестселлер',
+--     teacher_id INT(11) UNSIGNED NOT NULL COMMENT 'ID преподавателя',
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата создания',
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Дата последнего обновления',
+--     published_at TIMESTAMP NULL COMMENT 'Дата публикации',
+--     KEY idx_title (title),
+--     KEY idx_subject (subject),
+--     KEY idx_category (category),
+--     KEY idx_level (level),
+--     KEY idx_sign_language (sign_language),
+--     KEY idx_status (status),
+--     KEY idx_teacher_id (teacher_id),
+--     KEY idx_created_at (created_at),
+--     KEY idx_rating (rating),
+--     KEY idx_price (price),
+--     CONSTRAINT fk_courses_teacher_id FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE CASCADE
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Таблица курсов';
+
+-- -- Таблица уроков
+-- CREATE TABLE lessons (
+--     id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+--     course_id INT(11) UNSIGNED NOT NULL COMMENT 'ID курса',
+--     title VARCHAR(200) NOT NULL COMMENT 'Название урока',
+--     description TEXT NULL COMMENT 'Описание урока',
+--     video_url VARCHAR(255) NULL COMMENT 'URL видео',
+--     video_duration INT(11) NULL COMMENT 'Длительность видео в секундах',
+--     materials JSON NULL COMMENT 'Материалы урока в формате JSON',
+--     theory_content TEXT NULL COMMENT 'Теоретический материал',
+--     practice_tasks JSON NULL COMMENT 'Практические задания в формате JSON',
+--     quiz_questions JSON NULL COMMENT 'Вопросы теста в формате JSON',
+--     order_num INT(11) NOT NULL COMMENT 'Порядковый номер урока в курсе',
+--     lesson_type VARCHAR(50) NOT NULL DEFAULT 'video' COMMENT 'Тип урока',
+--     is_free BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Бесплатный ли урок',
+--     is_published BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Опубликован ли урок',
+--     min_score INT(11) NOT NULL DEFAULT 0 COMMENT 'Минимальный балл для прохождения',
+--     max_attempts INT(11) NOT NULL DEFAULT 3 COMMENT 'Максимальное количество попыток',
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата создания',
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Дата последнего обновления',
+--     KEY idx_course_id (course_id),
+--     KEY idx_order_num (order_num),
+--     KEY idx_lesson_type (lesson_type),
+--     KEY idx_is_published (is_published),
+--     CONSTRAINT fk_lessons_course_id FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Таблица уроков';
+
+-- -- Таблица прогресса
+-- CREATE TABLE progress (
+--     id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+--     user_id INT(11) UNSIGNED NOT NULL COMMENT 'ID студента',
+--     course_id INT(11) UNSIGNED NOT NULL COMMENT 'ID курса',
+--     lesson_id INT(11) UNSIGNED NULL COMMENT 'ID урока',
+--     status ENUM('not_started', 'in_progress', 'completed', 'failed') NOT NULL DEFAULT 'not_started' COMMENT 'Статус прохождения',
+--     score INT(11) NULL COMMENT 'Баллы из тестов',
+--     max_score INT(11) NULL COMMENT 'Максимальные баллы',
+--     percentage FLOAT NOT NULL DEFAULT 0.0 COMMENT 'Процент выполнения',
+--     attempts INT(11) NOT NULL DEFAULT 0 COMMENT 'Количество попыток',
+--     time_spent INT(11) NOT NULL DEFAULT 0 COMMENT 'Время в секундах',
+--     extra_data JSON NULL COMMENT 'Дополнительные данные',
+--     started_at TIMESTAMP NULL COMMENT 'Время начала',
+--     completed_at TIMESTAMP NULL COMMENT 'Время завершения',
+--     last_accessed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Последний доступ',
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата создания записи',
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Дата последнего обновления',
+--     UNIQUE KEY unique_user_course_lesson (user_id, course_id, lesson_id),
+--     KEY idx_user_id (user_id),
+--     KEY idx_course_id (course_id),
+--     KEY idx_lesson_id (lesson_id),
+--     KEY idx_status (status),
+--     CONSTRAINT fk_progress_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+--     CONSTRAINT fk_progress_course_id FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+--     CONSTRAINT fk_progress_lesson_id FOREIGN KEY (lesson_id) REFERENCES lessons(id) ON DELETE CASCADE
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Таблица прогресса студентов';
+
+-- -- Таблица AI чата
+-- CREATE TABLE ai_chat (
+--     id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+--     user_id INT(11) UNSIGNED NOT NULL COMMENT 'ID пользователя',
+--     session_id VARCHAR(100) NULL COMMENT 'ID сессии чата',
+--     question TEXT NOT NULL COMMENT 'Вопрос пользователя',
+--     question_type ENUM('text', 'gesture', 'voice', 'image') NOT NULL DEFAULT 'text' COMMENT 'Тип вопроса',
+--     question_file_url VARCHAR(255) NULL COMMENT 'URL файла вопроса',
+--     answer TEXT NOT NULL COMMENT 'Ответ AI ассистента',
+--     answer_type ENUM('text', 'gesture_3d', 'video', 'mixed') NOT NULL DEFAULT 'text' COMMENT 'Тип ответа',
+--     answer_file_url VARCHAR(255) NULL COMMENT 'URL файла ответа',
+--     context_data JSON NULL COMMENT 'Контекстные данные',
+--     confidence_score INT(11) NULL COMMENT 'Уверенность AI (0-100)',
+--     processing_time INT(11) NULL COMMENT 'Время обработки в мс',
+--     user_rating INT(11) NULL COMMENT 'Оценка ответа (1-5)',
+--     user_feedback TEXT NULL COMMENT 'Отзыв пользователя',
+--     is_helpful ENUM('yes', 'no') NULL COMMENT 'Был ли ответ полезен',
+--     is_flagged ENUM('yes', 'no') NOT NULL DEFAULT 'no' COMMENT 'Отмечен как проблемный',
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Время создания',
+--     KEY idx_user_id (user_id),
+--     KEY idx_session_id (session_id),
+--     KEY idx_created_at (created_at),
+--     KEY idx_question_type (question_type),
+--     KEY idx_answer_type (answer_type),
+--     CONSTRAINT fk_ai_chat_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Таблица чата с AI';
+
+-- -- Таблица отзывов
+-- CREATE TABLE reviews (
+--     id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+--     course_id INT(11) UNSIGNED NOT NULL COMMENT 'ID курса',
+--     user_id INT(11) UNSIGNED NOT NULL COMMENT 'ID автора отзыва',
+--     rating INT(11) NOT NULL COMMENT 'Оценка от 1 до 5',
+--     title VARCHAR(200) NULL COMMENT 'Заголовок отзыва',
+--     comment TEXT NULL COMMENT 'Текст отзыва',
+--     content_rating INT(11) NULL COMMENT 'Оценка содержания (1-5)',
+--     instructor_rating INT(11) NULL COMMENT 'Оценка преподавателя (1-5)',
+--     difficulty_rating INT(11) NULL COMMENT 'Оценка сложности (1-5)',
+--     would_recommend BOOLEAN NULL COMMENT 'Рекомендует ли курс',
+--     is_approved BOOLEAN NOT NULL DEFAULT TRUE COMMENT 'Одобрен ли отзыв',
+--     is_featured BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Рекомендуемый отзыв',
+--     is_verified_purchase BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Подтвержденная покупка',
+--     helpful_count INT(11) NOT NULL DEFAULT 0 COMMENT 'Количество полезно',
+--     not_helpful_count INT(11) NOT NULL DEFAULT 0 COMMENT 'Количество не полезно',
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата создания',
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Дата обновления',
+--     approved_at TIMESTAMP NULL COMMENT 'Дата одобрения',
+--     UNIQUE KEY unique_user_course_review (user_id, course_id),
+--     KEY idx_course_id (course_id),
+--     KEY idx_user_id (user_id),
+--     KEY idx_rating (rating),
+--     KEY idx_created_at (created_at),
+--     KEY idx_is_approved (is_approved),
+--     CONSTRAINT fk_reviews_course_id FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
+--     CONSTRAINT fk_reviews_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Таблица отзывов о курсах';
+
+-- -- Включаем обратно проверку внешних ключей
+-- SET FOREIGN_KEY_CHECKS = 1;
+
+-- -- Вставка тестовых данных
+-- INSERT INTO users (name, email, password_hash, role, is_active, is_verified) VALUES 
+-- ('Администратор', 'admin@visualmind.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6hsxq5S/kS', 'admin', TRUE, TRUE),
+-- ('Анна Петрова', 'teacher@visualmind.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6hsxq5S/kS', 'teacher', TRUE, TRUE),
+-- ('Иван Иванов', 'student@visualmind.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj6hsxq5S/kS', 'student', TRUE, TRUE);
+
+-- INSERT INTO courses (title, description, subject, category, level, sign_language, price, teacher_id, status) VALUES 
+-- ('Основы русского жестового языка', 'Изучите базовые жесты и грамматику РЖЯ с нуля', 'Основы жестового языка', 'Основы', 'beginner', 'ru', 2500.00, 2, 'published');
+
+-- INSERT INTO lessons (course_id, title, description, order_num, lesson_type, is_published) VALUES 
+-- (1, 'Введение в жестовый язык', 'Первый урок курса - знакомство с основами', 1, 'video', TRUE);
+
+-- COMMIT;
