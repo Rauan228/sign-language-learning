@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, DateTime, ForeignKey, Boolean, Text
-from sqlalchemy.dialects.mysql import INTEGER
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -10,9 +9,9 @@ class Enrollment(Base):
     """Модель записи пользователя на курс"""
     __tablename__ = "enrollments"
 
-    id = Column(INTEGER(unsigned=True), primary_key=True, index=True)
-    user_id = Column(INTEGER(unsigned=True), ForeignKey("users.id"), nullable=False)
-    course_id = Column(INTEGER(unsigned=True), ForeignKey("courses.id"), nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
     
     # Даты
     enrolled_at = Column(DateTime, default=datetime.utcnow, nullable=False)

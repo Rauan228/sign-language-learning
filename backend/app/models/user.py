@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, Enum, DateTime, Boolean
-from sqlalchemy.dialects.mysql import INTEGER
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
@@ -25,7 +24,7 @@ class User(Base):
     """Модель пользователя"""
     __tablename__ = "users"
     
-    id = Column(INTEGER(unsigned=True), primary_key=True, index=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(100), nullable=False, comment="Имя пользователя")
     email = Column(String(150), unique=True, index=True, nullable=False, comment="Email")
     phone = Column(String(20), nullable=True, comment="Телефон")

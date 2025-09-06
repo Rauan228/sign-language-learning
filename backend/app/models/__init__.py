@@ -5,6 +5,8 @@ from .progress import Progress
 from .ai_chat import AIChat
 from .review import Review
 from .enrollment import Enrollment
+from .test import Test, Question, QuestionOption, TestAttempt, Answer
+from .certificate import Certificate
 
 __all__ = [
     "User",
@@ -13,5 +15,11 @@ __all__ = [
     "Progress",
     "AIChat",
     "Review",
-    "Enrollment"
+    "Enrollment",
+    "Test",
+    "Question",
+    "QuestionOption",
+    "TestAttempt",
+    "Answer",
+    "Certificate"
 ]

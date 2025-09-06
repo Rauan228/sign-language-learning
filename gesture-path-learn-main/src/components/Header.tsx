@@ -45,8 +45,8 @@ const Header = () => {
             
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Link to="/ai-assistant" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 hover:text-primary focus:bg-gradient-to-r focus:from-primary/10 focus:to-secondary/10 focus:text-primary focus:outline-none disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden">
-                  <span className="relative z-10">AI-Ассистент</span>
+                <Link to="/gesture-chat" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-gradient-to-r hover:from-primary/10 hover:to-secondary/10 hover:text-primary focus:bg-gradient-to-r focus:from-primary/10 focus:to-secondary/10 focus:text-primary focus:outline-none disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden">
+                  <span className="relative z-10">Чат с жестами</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                 </Link>
               </NavigationMenuLink>

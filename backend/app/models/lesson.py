@@ -82,9 +82,10 @@ class Lesson(Base):
         comment="Дата последнего обновления"
     )
     
-    # Связи с другими таблицами
+    # Связи с другими таблицами# Relationships
     course = relationship("Course", back_populates="lessons")
     progress = relationship("Progress", back_populates="lesson", cascade="all, delete-orphan")
+    tests = relationship("Test", back_populates="lesson", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<Lesson(id={self.id}, title='{self.title}', course_id={self.course_id}, order={self.order_num})>"

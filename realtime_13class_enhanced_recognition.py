@@ -64,10 +64,11 @@ class EnhancedGestureRecognizer:
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.model.eval()
         
-        # Создание scaler
-        self.scaler = StandardScaler()
-        self.scaler.mean_ = np.array(self.config['scaler_mean'])
-        self.scaler.scale_ = np.array(self.config['scaler_scale'])
+        # Загрузка scaler из отдельного файла
+        import pickle
+        scaler_path = os.path.join(os.path.dirname(config_path), 'scaler.pkl')
+        with open(scaler_path, 'rb') as f:
+            self.scaler = pickle.load(f)
         
         # Инициализация MediaPipe с оптимизированными настройками
         self.mp_hands = mp.solutions.hands
@@ -126,7 +127,7 @@ class EnhancedGestureRecognizer:
         print(f"Улучшенные признаки: {self.config.get('feature_description', 'Стандартные')}")
     
     def extract_enhanced_keypoints(self, frame):
-        """Извлечение ключевых точек рук и позы с оптимизацией"""
+        """Извлечение ключевых точек рук с оптимизацией"""
         # Уменьшаем размер кадра для ускорения обработки
         height, width = frame.shape[:2]
         if width > 640:
@@ -180,39 +181,12 @@ class EnhancedGestureRecognizer:
         
         hand_keypoints = hand_keypoints[:126] + [0.0] * max(0, 126 - len(hand_keypoints))
         
-        # Обработка позы
+        # Обработка позы (только для визуализации)
         pose_results = self.pose.process(frame_rgb)
-        pose_keypoints = []
         pose_detected = 0
         
         if pose_results.pose_landmarks:
             pose_detected = 1
-            
-            # Извлекаем ключевые точки верхней части тела
-            important_pose_indices = [
-                0,   # нос
-                1, 2, 3, 4, 5, 6,  # глаза и уши
-                7, 8,  # рот
-                9, 10,  # плечи
-                11, 12,  # локти
-                13, 14,  # запястья
-                15, 16,  # бедра
-                17, 18,  # колени
-                19, 20,  # лодыжки
-                21, 22,  # пятки
-                23, 24,  # большие пальцы ног
-                25, 26,  # мизинцы ног
-                27, 28,  # указательные пальцы ног
-            ]
-            
-            for idx in important_pose_indices:
-                if idx < len(pose_results.pose_landmarks.landmark):
-                    landmark = pose_results.pose_landmarks.landmark[idx]
-                    pose_keypoints.extend([landmark.x, landmark.y, landmark.z, landmark.visibility])
-                else:
-                    pose_keypoints.extend([0.0, 0.0, 0.0, 0.0])
-        else:
-            pose_keypoints = [0.0] * (29 * 4)
         
         # Стабилизация трекинга позы
         if pose_detected > 0:
@@ -220,19 +194,13 @@ class EnhancedGestureRecognizer:
         else:
             self.stable_pose_count = max(self.stable_pose_count - 1, 0)
         
-        # Убеждаемся, что у нас ровно 116 элементов для позы
-        pose_keypoints = pose_keypoints[:116] + [0.0] * max(0, 116 - len(pose_keypoints))
-        
         # Используем последние стабильные keypoints если трекинг нестабилен
-        combined_keypoints = hand_keypoints + pose_keypoints
+        if self.stable_hands_count < self.min_stable_frames and self.last_keypoints is not None:
+            hand_keypoints = self.last_keypoints.copy()
+        elif hands_detected > 0:
+            self.last_keypoints = hand_keypoints.copy()
         
-        if (self.stable_hands_count < self.min_stable_frames or 
-            self.stable_pose_count < self.min_stable_frames) and self.last_keypoints is not None:
-            combined_keypoints = self.last_keypoints.copy()
-        elif hands_detected > 0 or pose_detected > 0:
-            self.last_keypoints = combined_keypoints.copy()
-        
-        return np.array(combined_keypoints, dtype=np.float32), hands_results, pose_results, hands_detected, pose_detected
+        return np.array(hand_keypoints, dtype=np.float32), hands_results, pose_results, hands_detected, pose_detected
     
     def predict_gesture(self, sequence):
         """Предсказание жеста по последовательности с оптимизацией"""
@@ -517,8 +485,8 @@ class EnhancedGestureRecognizer:
 
 def main():
     """Основная функция"""
-    model_path = 'D:/gesture/13class_enhanced_model_output/13class_enhanced_gesture_model.pth'
-    config_path = 'D:/gesture/13class_enhanced_model_output/config.json'
+    model_path = os.path.join(os.path.dirname(__file__), 'clean_model', '13class_model_output', '13class_gesture_model.pth')
+    config_path = os.path.join(os.path.dirname(__file__), 'clean_model', '13class_model_output', 'config.json')
     
     # Проверяем существование файлов
     if not os.path.exists(model_path):

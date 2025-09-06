@@ -11,8 +11,8 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
     
-    # База данных MySQL
-    DATABASE_URL: str = "mysql://root:@127.127.126.50/Berufsberatung"
+    # База данных SQLite для разработки
+    DATABASE_URL: str = "sqlite:///./gesture_app.db"
     
     # MySQL Database Configuration
     MYSQL_HOST: str = "127.127.126.50"
@@ -70,7 +70,7 @@ class Settings(BaseSettings):
     @property
     def database_url(self) -> str:
         """Формирование URL для подключения к базе данных"""
-        return f"mysql://{self.MYSQL_USER}:{self.MYSQL_PASSWORD}@{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DATABASE}"
+        return self.DATABASE_URL
     
     class Config:
         env_file = ".env"

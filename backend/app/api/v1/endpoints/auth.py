@@ -8,6 +8,10 @@ from app.core.config import settings
 from app.schemas.auth import Token, LoginResponse, PasswordResetRequest, PasswordReset
 from app.schemas.user import UserCreate, UserResponse
 from app.services.auth import get_auth_service
+from fastapi.security import OAuth2PasswordBearer
+from app.models.user import User
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 router = APIRouter()
 
@@ -245,11 +249,39 @@ async def logout():
     return {"message": "Успешный выход из системы"}
 
 
+def get_current_user(
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme)
+) -> User:
+    """Получение текущего пользователя по токену"""
+    auth_service = get_auth_service(db)
+    user = auth_service.get_current_user(token)
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Недействительные учетные данные",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    return user
+
+
+def get_current_active_user(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    """Получение активного пользователя"""
+    if not current_user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Неактивный пользователь"
+        )
+    return current_user
+
+
 @router.get("/me", response_model=UserResponse)
-async def get_current_user(
-    db: Session = Depends(get_db)
+async def get_me(
+    current_user: User = Depends(get_current_active_user)
 ):
     """Получение информации о текущем пользователе"""
-    auth_service = AuthService(db)
-    current_user = Depends(auth_service.get_current_user)
     return current_user

@@ -1,0 +1,105 @@
+-- -- Создание таблиц для модуля тестов и заданий
+
+-- -- Таблица тестов
+-- CREATE TABLE IF NOT EXISTS tests (
+--     id SERIAL PRIMARY KEY,
+--     title VARCHAR(255) NOT NULL,
+--     description TEXT,
+--     lesson_id INTEGER NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+--     time_limit INTEGER, -- в минутах
+--     max_attempts INTEGER DEFAULT 3,
+--     passing_score INTEGER DEFAULT 70, -- процент правильных ответов
+--     is_active BOOLEAN DEFAULT TRUE,
+--     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP WITH TIME ZONE
+-- );
+
+-- -- Таблица вопросов
+-- CREATE TABLE IF NOT EXISTS questions (
+--     id SERIAL PRIMARY KEY,
+--     test_id INTEGER NOT NULL REFERENCES tests(id) ON DELETE CASCADE,
+--     question_text TEXT NOT NULL,
+--     question_type VARCHAR(50) NOT NULL CHECK (question_type IN ('multiple_choice', 'true_false', 'text_input', 'gesture_recognition')),
+--     points INTEGER DEFAULT 1,
+--     order_index INTEGER DEFAULT 0,
+--     gesture_class VARCHAR(100), -- для вопросов с распознаванием жестов
+--     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- -- Таблица вариантов ответов
+-- CREATE TABLE IF NOT EXISTS question_options (
+--     id SERIAL PRIMARY KEY,
+--     question_id INTEGER NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
+--     option_text TEXT NOT NULL,
+--     is_correct BOOLEAN DEFAULT FALSE,
+--     order_index INTEGER DEFAULT 0
+-- );
+
+-- -- Таблица попыток прохождения тестов
+-- CREATE TABLE IF NOT EXISTS test_attempts (
+--     id SERIAL PRIMARY KEY,
+--     test_id INTEGER NOT NULL REFERENCES tests(id) ON DELETE CASCADE,
+--     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+--     score INTEGER, -- процент правильных ответов
+--     total_points INTEGER,
+--     earned_points INTEGER,
+--     is_completed BOOLEAN DEFAULT FALSE,
+--     started_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+--     completed_at TIMESTAMP WITH TIME ZONE,
+--     time_spent INTEGER -- в секундах
+-- );
+
+-- -- Таблица ответов пользователей
+-- CREATE TABLE IF NOT EXISTS answers (
+--     id SERIAL PRIMARY KEY,
+--     attempt_id INTEGER NOT NULL REFERENCES test_attempts(id) ON DELETE CASCADE,
+--     question_id INTEGER NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
+--     selected_option_id INTEGER REFERENCES question_options(id), -- для multiple choice
+--     text_answer TEXT, -- для text input
+--     gesture_result VARCHAR(100), -- результат распознавания жеста
+--     is_correct BOOLEAN,
+--     points_earned INTEGER DEFAULT 0,
+--     answered_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+-- );
+
+-- -- Индексы для оптимизации запросов
+-- CREATE INDEX IF NOT EXISTS idx_tests_lesson_id ON tests(lesson_id);
+-- CREATE INDEX IF NOT EXISTS idx_tests_is_active ON tests(is_active);
+-- CREATE INDEX IF NOT EXISTS idx_questions_test_id ON questions(test_id);
+-- CREATE INDEX IF NOT EXISTS idx_questions_order ON questions(test_id, order_index);
+-- CREATE INDEX IF NOT EXISTS idx_question_options_question_id ON question_options(question_id);
+-- CREATE INDEX IF NOT EXISTS idx_test_attempts_test_user ON test_attempts(test_id, user_id);
+-- CREATE INDEX IF NOT EXISTS idx_test_attempts_user_id ON test_attempts(user_id);
+-- CREATE INDEX IF NOT EXISTS idx_test_attempts_completed ON test_attempts(is_completed);
+-- CREATE INDEX IF NOT EXISTS idx_answers_attempt_id ON answers(attempt_id);
+-- CREATE INDEX IF NOT EXISTS idx_answers_question_id ON answers(question_id);
+
+-- -- Триггер для обновления updated_at в таблице tests
+-- CREATE OR REPLACE FUNCTION update_updated_at_column()
+-- RETURNS TRIGGER AS $$
+-- BEGIN
+--     NEW.updated_at = CURRENT_TIMESTAMP;
+--     RETURN NEW;
+-- END;
+-- $$ language 'plpgsql';
+
+-- CREATE TRIGGER update_tests_updated_at BEFORE UPDATE ON tests
+--     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- -- Комментарии к таблицам
+-- COMMENT ON TABLE tests IS 'Таблица тестов и заданий';
+-- COMMENT ON TABLE questions IS 'Таблица вопросов тестов';
+-- COMMENT ON TABLE question_options IS 'Таблица вариантов ответов на вопросы';
+-- COMMENT ON TABLE test_attempts IS 'Таблица попыток прохождения тестов';
+-- COMMENT ON TABLE answers IS 'Таблица ответов пользователей на вопросы';
+
+-- -- Комментарии к колонкам
+-- COMMENT ON COLUMN tests.time_limit IS 'Ограничение времени на прохождение теста в минутах';
+-- COMMENT ON COLUMN tests.max_attempts IS 'Максимальное количество попыток прохождения';
+-- COMMENT ON COLUMN tests.passing_score IS 'Минимальный процент правильных ответов для прохождения';
+-- COMMENT ON COLUMN questions.question_type IS 'Тип вопроса: multiple_choice, true_false, text_input, gesture_recognition';
+-- COMMENT ON COLUMN questions.points IS 'Количество баллов за правильный ответ';
+-- COMMENT ON COLUMN questions.gesture_class IS 'Класс жеста для вопросов с распознаванием жестов';
+-- COMMENT ON COLUMN test_attempts.score IS 'Итоговый балл в процентах';
+-- COMMENT ON COLUMN test_attempts.time_spent IS 'Время, потраченное на прохождение теста в секундах';
+-- COMMENT ON COLUMN answers.gesture_result IS 'Результат распознавания жеста пользователем';

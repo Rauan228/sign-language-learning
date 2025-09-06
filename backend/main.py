@@ -34,19 +34,23 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",  # React dev server
-        "http://localhost:8080",  # Vite dev server
+        "http://localhost:5173",  # Vite default port
+        "http://localhost:8080",  # Vite alternative port
         "http://localhost:8081",  # Alternative Vite port
         "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
         "http://127.0.0.1:8080",
         "http://127.0.0.1:8081",
+        "http://localhost:4173",  # Vite preview port
+        "http://127.0.0.1:4173",
     ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allow_headers=["*"],
 )
 
 # Подключение статических файлов
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="d:/gesture/backend/static"), name="static")
 
 # Подключение API роутеров
 app.include_router(api_router, prefix="/api/v1")

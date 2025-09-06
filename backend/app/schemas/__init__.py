@@ -48,9 +48,17 @@ from .progress import (
     UserProgressSummary,
     CourseProgressStats,
     ProgressStatus,
+    ActivityLog
+)
+
+from .certificate import (
     Certificate,
     CertificateCreate,
-    ActivityLog
+    CertificateUpdate,
+    CertificateInDB,
+    CertificateWithDetails,
+    CertificateList,
+    CertificateStats
 )
 
 from .ai_chat import (
@@ -150,9 +158,16 @@ __all__ = [
     "UserProgressSummary",
     "CourseProgressStats",
     "ProgressStatus",
+    "ActivityLog",
+    
+    # Certificate schemas
     "Certificate",
     "CertificateCreate",
-    "ActivityLog",
+    "CertificateUpdate",
+    "CertificateInDB",
+    "CertificateWithDetails",
+    "CertificateList",
+    "CertificateStats",
     
     # AI Chat schemas
     "ChatSession",

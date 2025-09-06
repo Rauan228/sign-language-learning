@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, Text, Enum, DECIMAL, Float, DateTime, ForeignKey, Boolean
-from sqlalchemy.dialects.mysql import INTEGER
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from app.core.database import Base
@@ -27,7 +26,7 @@ class Course(Base):
     """Модель курса"""
     __tablename__ = "courses"
     
-    id = Column(INTEGER(unsigned=True), primary_key=True, index=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     title = Column(String(200), nullable=False, index=True, comment="Название курса")
     description = Column(Text, nullable=False, comment="Описание курса")
     short_description = Column(String(500), nullable=True, comment="Краткое описание")
@@ -72,7 +71,7 @@ class Course(Base):
     
     # Преподаватель
     teacher_id = Column(
-        INTEGER(unsigned=True), 
+        Integer, 
         ForeignKey("users.id", ondelete="CASCADE"), 
         nullable=False,
         comment="ID преподавателя"
